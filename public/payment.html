@@ -1079,48 +1079,46 @@
 
           <!-- MOMO PANEL -->
           <div class="ewallet-panel" id="momo-panel">
-            <!-- QR thật từ tài khoản MoMo -->
-            <div style="position:relative;overflow:hidden;border-radius:16px;border:2px solid #AE2070;background:#FFF0F6;margin-bottom:0.75rem;">
-              <div style="overflow:hidden;height:240px;position:relative;">
-                <img src="images/momo-qr.png" alt="Mã QR MoMo - PHẠM PHƯƠNG NAM"
-                  style="width:100%;object-fit:cover;object-position:center 28%;display:block;" />
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <!-- QR động từ link MoMo chính thức -->
+              <div style="background:#FFF0F6;border:2px solid #AE2070;border-radius:16px;padding:1rem;margin-bottom:0.75rem;text-align:center;width:100%;">
+                <div style="font-size:0.7rem;font-weight:700;color:#AE2070;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.06em;">💳 Quét để chuyển tiền MoMo</div>
+                <img id="momo-qr-img" src="" alt="MoMo QR"
+                  style="width:200px;height:200px;border-radius:8px;display:block;margin:0 auto;" />
+                <div style="margin-top:0.5rem;font-size:0.75rem;color:#AE2070;font-weight:600;">PHẠM PHƯƠNG NAM</div>
               </div>
-              <div style="position:absolute;top:8px;left:8px;background:#AE2070;color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;">📱 QR Mô MoMo chính thức</div>
-            </div>
-            <div>
-              <div style="font-size:0.88rem;font-weight:700;color:#AE2070;margin-bottom:4px;">Ví MoMo • Phạm Phương Nam</div>
-              <div style="font-size:0.82rem;color:var(--text-muted);margin:3px 0;">ĐT: <strong>0934 467 977</strong>
-                <button class="copy-btn" onclick="copyText('momo-phone')">Sao chép</button>
-              </div>
-              <span id="momo-phone" style="display:none;">0934467977</span>
-              <div class="qr-amount" id="momo-amount">0đ</div>
-              <div class="qr-note">Nội dung: <strong id="momo-note">HATVANG-00000</strong></div>
-              <div class="qr-timer">
-                <div class="timer-dot" style="background:#AE2070;"></div> Mở app MoMo → Quét mã → Thanh toán
+              <div style="width:100%;">
+                <div style="font-size:0.88rem;font-weight:700;color:#AE2070;margin-bottom:4px;">Ví MoMo • 0934 467 977</div>
+                <span id="momo-phone" style="display:none;">0934467977</span>
+                <div class="qr-amount" id="momo-amount">0đ</div>
+                <div class="qr-note">Nội dung: <strong id="momo-note">HATVANG-00000</strong></div>
+                <div class="qr-timer">
+                  <div class="timer-dot" style="background:#AE2070;"></div>
+                  Mở MoMo → Quét mã → Nhập số tiền → Thanh toán
+                </div>
               </div>
             </div>
           </div>
 
           <!-- ZALOPAY PANEL -->
           <div class="ewallet-panel" id="zalo-panel">
-            <!-- QR thật từ tài khoản ZaloPay -->
-            <div style="position:relative;overflow:hidden;border-radius:16px;border:2px solid #0068FF;background:#F0F6FF;margin-bottom:0.75rem;">
-              <div style="overflow:hidden;height:240px;position:relative;">
-                <img src="images/zalo-qr.png" alt="Mã QR ZaloPay - PHAM PHUONG NAM"
-                  style="width:100%;object-fit:cover;object-position:center 22%;display:block;" />
+            <div style="display:flex;flex-direction:column;align-items:center;">
+              <!-- QR tậnh từ ZaloPay -->
+              <div style="background:#F0F6FF;border:2px solid #0068FF;border-radius:16px;padding:1rem;margin-bottom:0.75rem;text-align:center;width:100%;">
+                <div style="font-size:0.7rem;font-weight:700;color:#0068FF;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.06em;">💳 Quét để chuyển tiền ZaloPay</div>
+                <img id="zalo-qr-img" src="" alt="ZaloPay QR"
+                  style="width:200px;height:200px;border-radius:8px;display:block;margin:0 auto;" />
+                <div style="margin-top:0.5rem;font-size:0.75rem;color:#0068FF;font-weight:600;">PHAM PHUONG NAM</div>
               </div>
-              <div style="position:absolute;top:8px;left:8px;background:#0068FF;color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;">📱 QR ZaloPay chính thức</div>
-            </div>
-            <div>
-              <div style="font-size:0.88rem;font-weight:700;color:#0068FF;margin-bottom:4px;">ZaloPay • Pham Phuong Nam</div>
-              <div style="font-size:0.82rem;color:var(--text-muted);margin:3px 0;">ĐT: <strong>0934 467 977</strong>
-                <button class="copy-btn" onclick="copyText('zalo-phone')">Sao chép</button>
-              </div>
-              <span id="zalo-phone" style="display:none;">0934467977</span>
-              <div class="qr-amount" id="zalo-amount">0đ</div>
-              <div class="qr-note">Nội dung: <strong id="zalo-note">HATVANG-00000</strong></div>
-              <div class="qr-timer">
-                <div class="timer-dot" style="background:#0068FF;"></div> Mở app ZaloPay → Quét mã → Thanh toán
+              <div style="width:100%;">
+                <div style="font-size:0.88rem;font-weight:700;color:#0068FF;margin-bottom:4px;">ZaloPay • 0934 467 977</div>
+                <span id="zalo-phone" style="display:none;">0934467977</span>
+                <div class="qr-amount" id="zalo-amount">0đ</div>
+                <div class="qr-note">Nội dung: <strong id="zalo-note">HATVANG-00000</strong></div>
+                <div class="qr-timer">
+                  <div class="timer-dot" style="background:#0068FF;"></div>
+                  Mở ZaloPay → Quét mã → Nhập số tiền → Thanh toán
+                </div>
               </div>
             </div>
           </div>
@@ -1375,10 +1373,28 @@
       document.getElementById('qr-owner').textContent = selectedBank.owner;
     }
 
+    // ── QR CHÍNH THỨC MOMO & ZALOPAY (link tự điền số tiền) ─────────────
+    const MOMO_PHONE   = '0934467977';
+    const ZALOPAY_PHONE = '0934467977';
+
     function updateEwalletQR(type, amount) {
-      const data = encodeURIComponent(`${type.toUpperCase()} 0934467977 ${amount} HATVANG-${orderRef}`);
-      const url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${data}&color=${type === 'momo' ? 'AE2070' : '0068FF'}&bgcolor=FFFFFF&qzone=1`;
-      document.getElementById(type + '-qr').src = url;
+      const note = encodeURIComponent('HATVANG-' + orderRef);
+      let qrData;
+      if (type === 'momo') {
+        // Link MoMo nhận tiền chính thức
+        qrData = `https://nhantien.momo.vn/${MOMO_PHONE}?amount=${amount}&description=${note}`;
+        const url = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrData)}&color=AE2070&bgcolor=FFFFFF&qzone=1&margin=1`;
+        document.getElementById('momo-qr-img').src = url;
+        document.getElementById('momo-amount').textContent = amount.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('momo-note').textContent = 'HATVANG-' + orderRef;
+      } else {
+        // ZaloPay: dùng link chuyển tiền qua số điện thoại
+        qrData = `zalopay://app?action=transfer&phone=${ZALOPAY_PHONE}&amount=${amount}&desc=${note}`;
+        const url = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrData)}&color=0068FF&bgcolor=FFFFFF&qzone=1&margin=1`;
+        document.getElementById('zalo-qr-img').src = url;
+        document.getElementById('zalo-amount').textContent = amount.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('zalo-note').textContent = 'HATVANG-' + orderRef;
+      }
     }
 
     function selectBank(id, name, account, owner) {
@@ -1411,15 +1427,11 @@
         startTimer();
       } else if (method === 'momo') {
         document.getElementById('momo-panel').classList.add('show');
-        // Cập nhật số tiền và nội dung (QR là ảnh tĩnh)
-        document.getElementById('momo-amount').textContent = grand.toLocaleString('vi-VN') + 'đ';
-        document.getElementById('momo-note').textContent = 'HATVANG-' + orderRef;
+        updateEwalletQR('momo', grand);
         startTimer();
       } else if (method === 'zalo') {
         document.getElementById('zalo-panel').classList.add('show');
-        // Cập nhật số tiền và nội dung (QR là ảnh tĩnh)
-        document.getElementById('zalo-amount').textContent = grand.toLocaleString('vi-VN') + 'đ';
-        document.getElementById('zalo-note').textContent = 'HATVANG-' + orderRef;
+        updateEwalletQR('zalo', grand);
         startTimer();
       } else if (method === 'cash') {
         document.getElementById('cash-panel').classList.add('show');
