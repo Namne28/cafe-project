@@ -1,0 +1,8 @@
+
+services:
+  cafe-web:
+    build: .
+    container_name: hat-vang-cafe
+    ports:
+      - "3000:80"
+    restart: unless-stopped

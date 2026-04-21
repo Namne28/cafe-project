@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hạt Vàng Café</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #FAF6F0;
+      --brown-dark: #2C1A0E;
+      --brown-mid: #5C3D2E;
+      --brown-light: #A0714F;
+      --gold: #C9973A;
+      --gold-light: #F0C96A;
+      --text: #1A0F08;
+      --text-muted: #7A5C4A;
+      --white: #FFFFFF;
+      --border: rgba(92,61,46,0.15);
+      --card-bg: #FFFDF9;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--brown-dark);
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--gold-light);
+      letter-spacing: 0.04em;
+    }
+
+    .logo span { color: var(--white); font-weight: 400; }
+
+    nav { display: flex; gap: 0.25rem; align-items: center; }
+    nav a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+    nav a:hover { color: var(--white); background: rgba(255,255,255,0.1); }
+
+    /* AUTH HEADER */
+    .header-right { display: flex; align-items: center; gap: 0.75rem; }
+    .auth-btn {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 0.4rem 1rem;
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .auth-btn:hover { background: rgba(255,255,255,0.2); color: var(--white); }
+    .auth-btn.gold { background: var(--gold); color: var(--brown-dark); border-color: var(--gold); }
+    .auth-btn.gold:hover { background: var(--gold-light); }
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 100px;
+      padding: 0.3rem 0.9rem 0.3rem 0.4rem;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .user-chip .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--brown-mid));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .user-chip .uname { font-size: 0.82rem; font-weight: 600; color: var(--white); }
+
+    .cart-btn {
+      background: var(--gold);
+      color: var(--brown-dark);
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+      font-family: inherit;
+    }
+    .cart-btn:hover { background: var(--gold-light); }
+
+    /* HERO */
+    .hero {
+      background: var(--brown-dark);
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 40%, rgba(201,151,58,0.12) 0%, transparent 60%);
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(201,151,58,0.15);
+      border: 1px solid rgba(201,151,58,0.4);
+      color: var(--gold-light);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.35rem 1rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      color: var(--white);
+      line-height: 1.1;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .hero h1 em { color: var(--gold-light); font-style: normal; }
+    .hero p {
+      color: rgba(255,255,255,0.65);
+      font-size: 1.05rem;
+      max-width: 480px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+    .hero-cta {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--brown-dark);
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 0.8rem 2.2rem;
+      border-radius: 10px;
+      text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .hero-cta:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    /* FILTER BAR */
+    .filter-section {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      overflow-x: auto;
+      position: sticky;
+      top: 64px;
+      z-index: 90;
+    }
+    .filter-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+    .filter-tabs { display: flex; gap: 0.5rem; flex-wrap: nowrap; }
+    .filter-tab {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.4rem 1rem;
+      border-radius: 100px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .filter-tab:hover { border-color: var(--brown-light); color: var(--brown-mid); }
+    .filter-tab.active { background: var(--brown-dark); color: var(--white); border-color: var(--brown-dark); }
+
+    .temp-toggle {
+      margin-left: auto;
+      display: flex;
+      gap: 0.4rem;
+      background: #F0EBE3;
+      padding: 4px;
+      border-radius: 8px;
+    }
+    .temp-btn {
+      background: none;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.3rem 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .temp-btn.active { background: var(--white); color: var(--brown-dark); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+    /* MENU GRID */
+    main { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      margin-top: 3rem;
+    }
+    .section-header:first-child { margin-top: 0; }
+    .section-icon { font-size: 1.5rem; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--brown-dark);
+    }
+    .section-line { flex: 1; height: 1px; background: var(--border); }
+    .section-count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .menu-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+    .menu-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(92,61,46,0.12);
+      border-color: rgba(201,151,58,0.4);
+    }
+    .menu-card.hidden { display: none; }
+
+    .popular-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--gold);
+      color: var(--brown-dark);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 100px;
+    }
+
+    .item-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      color: var(--brown-dark);
+      font-weight: 600;
+      padding-right: 3rem;
+    }
+
+    .item-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .item-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.4rem;
+    }
+
+    .item-price {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--brown-mid);
+    }
+
+    .item-temps { display: flex; gap: 4px; }
+    .temp-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 100px;
+    }
+    .temp-tag.hot { background: #FEF0E6; color: #C25A1A; }
+    .temp-tag.cold { background: #E6F3FB; color: #1A6A9A; }
+
+    .add-btn {
+      background: var(--brown-dark);
+      color: var(--white);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      font-family: inherit;
+      flex-shrink: 0;
+    }
+    .add-btn:hover { background: var(--gold); color: var(--brown-dark); }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+      display: none;
+    }
+    .empty-state.show { display: block; }
+    .empty-state p { font-size: 1rem; }
+
+    /* CART SIDEBAR */
+    .cart-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+    }
+    .cart-overlay.open { display: block; }
+
+    .cart-sidebar {
+      position: fixed;
+      right: -420px;
+      top: 0;
+      bottom: 0;
+      width: 400px;
+      max-width: 100vw;
+      background: var(--white);
+      z-index: 201;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.3s ease;
+      box-shadow: -4px 0 30px rgba(0,0,0,0.15);
+    }
+    .cart-sidebar.open { right: 0; }
+
+    .cart-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cart-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--brown-dark);
+    }
+    .close-btn {
+      background: #F0EBE3;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
+    .cart-empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+    .cart-empty-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-name { font-size: 0.9rem; font-weight: 600; color: var(--brown-dark); }
+    .cart-item-price { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+    .qty-control { display: flex; align-items: center; gap: 8px; }
+    .qty-btn {
+      background: #F0EBE3;
+      border: none;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      color: var(--brown-dark);
+    }
+    .qty-btn:hover { background: var(--gold); }
+    .qty-num { font-size: 0.9rem; font-weight: 700; min-width: 20px; text-align: center; }
+
+    .cart-footer {
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 1rem;
+    }
+    .cart-total-label { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
+    .cart-total-amount { font-size: 1.4rem; font-weight: 700; color: var(--brown-dark); }
+
+    .order-btn {
+      width: 100%;
+      background: var(--brown-dark);
+      color: var(--white);
+      border: none;
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+      letter-spacing: 0.02em;
+    }
+    .order-btn:hover { background: var(--brown-mid); }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--brown-dark);
+      color: var(--white);
+      padding: 0.7rem 1.5rem;
+      border-radius: 100px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      z-index: 300;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* FOOTER */
+    footer {
+      background: var(--brown-dark);
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.85rem;
+    }
+    footer strong { color: var(--gold-light); }
+
+    @media (max-width: 640px) {
+      .hero { padding: 3rem 1.5rem 2.5rem; }
+      main { padding: 2rem 1rem 4rem; }
+      .filter-section { padding: 0.75rem 1rem; }
+      nav { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Hạt <span>Vàng</span> Café</div>
+  <nav>
+    <a href="#menu">Menu</a>
+    <a href="#">Về chúng tôi</a>
+    <a href="#">Liên hệ</a>
+  </nav>
+  <div class="header-right">
+    <div id="auth-area"><!-- filled by JS --></div>
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 <span id="cart-count">0</span> món
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-badge">☕ Thức uống thủ công · Nguyên liệu tươi</div>
+  <h1>Mỗi tách cà phê<br/>là một <em>câu chuyện</em></h1>
+  <p>Không gian yên tĩnh, hương vị chuẩn vị Việt — từ phin truyền thống đến specialty coffee.</p>
+  <a href="#menu" class="hero-cta">Xem thực đơn</a>
+</section>
+
+<div class="filter-section" id="menu">
+  <span class="filter-label">Danh mục</span>
+  <div class="filter-tabs" id="filter-tabs">
+    <button class="filter-tab active" data-cat="all">Tất cả</button>
+  </div>
+  <div class="temp-toggle">
+    <button class="temp-btn active" data-temp="all">Tất cả</button>
+    <button class="temp-btn" data-temp="hot">🔥 Nóng</button>
+    <button class="temp-btn" data-temp="cold">🧊 Lạnh</button>
+  </div>
+</div>
+
+<main id="menu-main"></main>
+
+<div class="empty-state" id="empty-state">
+  <p>Không tìm thấy món phù hợp với bộ lọc.</p>
+</div>
+
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <span class="cart-title">Đơn hàng của bạn</span>
+    <button class="close-btn" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">☕</div>
+      <p style="color:var(--text-muted);font-size:0.9rem;">Chưa có món nào.<br/>Hãy chọn đồ uống nhé!</p>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span class="cart-total-label">Tổng cộng</span>
+      <span class="cart-total-amount" id="cart-total">0đ</span>
+    </div>
+    <button class="order-btn" onclick="placeOrder()">Đặt hàng ngay</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <p><strong>Hạt Vàng Café</strong> · 123 Nguyễn Huệ, Quận 1, TP.HCM · Mở cửa 7:00 – 22:00</p>
+</footer>
+
+<script>
+  let menuData = null;
+  let cart = {};
+  let activeCategory = 'all';
+  let activeTemp = 'all';
+
+  async function loadMenu() {
+    const res = await fetch('/data/menu.json');
+    menuData = await res.json();
+
+    // Merge mon tuy chinh tu admin (localStorage)
+    const customItems = JSON.parse(localStorage.getItem('hvCafeMenuCustom') || '[]');
+    if (customItems.length > 0) {
+      const catMeta = {
+        'ca-phe':   { name: 'Ca Phe Viet',     icon: '\u2615' },
+        'espresso': { name: 'Espresso',         icon: '\ud83e\uded8' },
+        'tra':      { name: 'Tra & Tra Sua',    icon: '\ud83c\udf75' },
+        'sinh-to':  { name: 'Sinh To & Nuoc Ep', icon: '\ud83e\udd64' },
+        'dac-biet': { name: 'Dac Biet',         icon: '\u2728' },
+      };
+      customItems.forEach(function(ci) {
+        var cat = menuData.categories.find(function(c) { return c.id === ci.category; });
+        if (!cat) {
+          var meta = catMeta[ci.category] || { name: ci.category, icon: '\ud83c\udf7d\ufe0f' };
+          cat = { id: ci.category, name: meta.name, icon: meta.icon, items: [] };
+          menuData.categories.push(cat);
+        }
+        if (!cat.items.find(function(x) { return String(x.id) === String(ci.id); })) {
+          cat.items.push(Object.assign({}, ci));
+        }
+      });
+    }
+
+    buildFilterTabs();
+    renderMenu();
+  }
+
+  function buildFilterTabs() {
+    const tabs = document.getElementById('filter-tabs');
+    menuData.categories.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-tab';
+      btn.dataset.cat = cat.id;
+      btn.textContent = cat.icon + ' ' + cat.name;
+      btn.onclick = () => setCategory(cat.id);
+      tabs.appendChild(btn);
+    });
+    document.querySelectorAll('.filter-tab').forEach(b => {
+      b.onclick = () => setCategory(b.dataset.cat);
+    });
+  }
+
+  function setCategory(cat) {
+    activeCategory = cat;
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+    renderMenu();
+  }
+
+  function setTemp(temp) {
+    activeTemp = temp;
+    document.querySelectorAll('.temp-btn').forEach(b => b.classList.toggle('active', b.dataset.temp === temp));
+    renderMenu();
+  }
+
+  document.querySelectorAll('.temp-btn').forEach(b => b.addEventListener('click', () => setTemp(b.dataset.temp)));
+
+  function renderMenu() {
+    const main = document.getElementById('menu-main');
+    main.innerHTML = '';
+    let totalVisible = 0;
+
+    menuData.categories.forEach(cat => {
+      if (activeCategory !== 'all' && activeCategory !== cat.id) return;
+      const filtered = cat.items.filter(item => {
+        if (activeTemp === 'hot') return item.hot;
+        if (activeTemp === 'cold') return item.cold;
+        return true;
+      });
+      if (filtered.length === 0) return;
+      totalVisible += filtered.length;
+
+      const section = document.createElement('div');
+      section.innerHTML = `
+        <div class="section-header">
+          <span class="section-icon">${cat.icon}</span>
+          <h2 class="section-title">${cat.name}</h2>
+          <div class="section-line"></div>
+          <span class="section-count">${filtered.length} món</span>
+        </div>
+        <div class="menu-grid">${filtered.map(item => cardHTML(item)).join('')}</div>
+      `;
+      main.appendChild(section);
+    });
+
+    document.getElementById('empty-state').classList.toggle('show', totalVisible === 0);
+  }
+
+  function cardHTML(item) {
+    const tempTags = [
+      item.hot ? '<span class="temp-tag hot">Nóng</span>' : '',
+      item.cold ? '<span class="temp-tag cold">Lạnh</span>' : ''
+    ].join('');
+    // ID của món tùy chỉnh là string (c_...) → phải bọc trong dấu nháy
+    const safeId   = String(item.id).replace(/'/g, '');
+    const safeName = (item.name || '').replace(/'/g, '\u2019').replace(/"/g, '&quot;');
+    return `
+      <div class="menu-card">
+        ${item.popular ? '<span class="popular-badge">Bán chạy</span>' : ''}
+        <div class="item-name">${item.name}</div>
+        <div class="item-desc">${item.desc || ''}</div>
+        <div class="item-footer">
+          <div>
+            <div class="item-price">${item.price.toLocaleString('vi-VN')}đ</div>
+            <div class="item-temps" style="margin-top:4px;">${tempTags}</div>
+          </div>
+          <button class="add-btn" onclick="addToCart('${safeId}', '${safeName}', ${item.price})">+</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function addToCart(id, name, price) {
+    if (!cart[id]) cart[id] = { name, price, qty: 0 };
+    cart[id].qty++;
+    updateCart();
+    showToast('Đã thêm ' + name);
+  }
+
+  function updateCart() {
+    const items = Object.entries(cart).filter(([, v]) => v.qty > 0);
+    const total = items.reduce((s, [, v]) => s + v.price * v.qty, 0);
+    const count = items.reduce((s, [, v]) => s + v.qty, 0);
+
+    document.getElementById('cart-count').textContent = count;
+    document.getElementById('cart-total').textContent = total.toLocaleString('vi-VN') + 'đ';
+
+    const el = document.getElementById('cart-items');
+    if (items.length === 0) {
+      el.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">☕</div><p style="color:var(--text-muted);font-size:0.9rem;">Chưa có món nào.<br/>Hãy chọn đồ uống nhé!</p></div>`;
+      return;
+    }
+    el.innerHTML = items.map(([id, v]) => `
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <div class="cart-item-name">${v.name}</div>
+          <div class="cart-item-price">${v.price.toLocaleString('vi-VN')}đ / ly</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty(${id}, -1)">−</button>
+          <span class="qty-num">${v.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${id}, 1)">+</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function changeQty(id, delta) {
+    if (!cart[id]) return;
+    cart[id].qty = Math.max(0, cart[id].qty + delta);
+    if (cart[id].qty === 0) delete cart[id];
+    updateCart();
+  }
+
+  function toggleCart() {
+    const sidebar = document.getElementById('cart-sidebar');
+    const overlay = document.getElementById('cart-overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  function placeOrder() {
+    const items = Object.values(cart).filter(v => v.qty > 0);
+    if (items.length === 0) return showToast('Vui lòng chọn món!');
+
+    // EMOJI map để hiển thị icon trên trang thanh toán
+    const emojiMap = {
+      'ca-phe': '☕', 'espresso': '🫘', 'tra': '🍵',
+      'sinh-to': '🥤', 'dac-biet': '✨'
+    };
+
+    // Lưu giỏ hàng tạm vào localStorage để trang payment.html đọc
+    const pendingCart = items.map(v => ({
+      id: v.id || Date.now(),
+      name: v.name,
+      price: v.price,
+      qty: v.qty,
+      emoji: v.emoji || '☕'
+    }));
+    localStorage.setItem('hvCafePendingCart', JSON.stringify(pendingCart));
+
+    // Chuyển sang trang thanh toán
+    window.location.href = 'payment.html';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  loadMenu();
+
+  // ── AUTH HEADER ────────────────────────────────────────────────────────
+  (function initAuthHeader() {
+    const sess = JSON.parse(localStorage.getItem('hvCafeSession') || 'null');
+    const area = document.getElementById('auth-area');
+    if (sess && sess.username) {
+      const initial = (sess.fullname || sess.username)[0].toUpperCase();
+      area.innerHTML = `
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+          ${sess.role === 'admin' ? `<a href="admin.html" class="auth-btn gold">⚙️ Admin</a>` : ''}
+          <div class="user-chip">
+            <div class="avatar">${initial}</div>
+            <span class="uname">${sess.fullname || sess.username}</span>
+          </div>
+          <button class="auth-btn" onclick="doLogout()" title="Đăng xuất">🚪</button>
+        </div>
+      `;
+    } else {
+      area.innerHTML = `<a href="login.html" class="auth-btn gold">Đăng nhập</a>`;
+    }
+  })();
+
+  function doLogout() {
+    localStorage.removeItem('hvCafeSession');
+    window.location.href = 'login.html';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập – Hạt Vàng Café</title>
+  <meta name="description" content="Đăng nhập hoặc tạo tài khoản tại Hạt Vàng Café để đặt hàng và quản lý đơn." />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #FAF6F0;
+      --brown-dark: #2C1A0E;
+      --brown-mid: #5C3D2E;
+      --brown-light: #A0714F;
+      --gold: #C9973A;
+      --gold-light: #F0C96A;
+      --text: #1A0F08;
+      --text-muted: #7A5C4A;
+      --white: #FFFFFF;
+      --border: rgba(92,61,46,0.15);
+      --card-bg: #FFFDF9;
+      --error: #C0392B;
+      --success: #27AE60;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background: var(--brown-dark);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(201,151,58,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(92,61,46,0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 60% 80%, rgba(201,151,58,0.08) 0%, transparent 50%);
+      animation: bgPulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes bgPulse {
+      from { opacity: 0.8; }
+      to { opacity: 1; }
+    }
+
+    /* Floating particles */
+    .particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--gold);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float linear infinite;
+    }
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
+
+    /* CARD */
+    .auth-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      animation: cardIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .card-header {
+      background: var(--brown-dark);
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 80%, rgba(201,151,58,0.2) 0%, transparent 70%);
+    }
+
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--gold-light);
+      position: relative;
+      margin-bottom: 0.25rem;
+    }
+    .brand span { color: var(--white); font-weight: 400; }
+    .brand-sub {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      position: relative;
+    }
+
+    .coffee-icon {
+      font-size: 2.8rem;
+      display: block;
+      margin-bottom: 0.75rem;
+      animation: steam 3s ease-in-out infinite;
+    }
+    @keyframes steam {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    /* TAB SWITCHER */
+    .tab-row {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      background: var(--white);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      background: none;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+    }
+    .tab-btn.active {
+      color: var(--brown-dark);
+    }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    /* FORM */
+    .form-body {
+      padding: 2rem;
+    }
+
+    .form-panel { display: none; animation: fadeIn 0.3s ease; }
+    .form-panel.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--brown-mid);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: var(--cream);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,151,58,0.12);
+      background: var(--white);
+    }
+    input.error { border-color: var(--error); box-shadow: 0 0 0 3px rgba(192,57,43,0.1); }
+
+    .eye-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--text-muted);
+      padding: 2px;
+    }
+
+    .error-msg {
+      display: none;
+      font-size: 0.78rem;
+      color: var(--error);
+      margin-top: 0.4rem;
+      font-weight: 500;
+    }
+    .error-msg.show { display: block; }
+
+    .alert-box {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+    .alert-box.show { display: flex; }
+    .alert-box.err { background: #FDECEA; color: var(--error); border: 1px solid rgba(192,57,43,0.2); }
+    .alert-box.ok { background: #EAFAF1; color: var(--success); border: 1px solid rgba(39,174,96,0.2); }
+
+    .submit-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--brown-dark);
+      color: var(--white);
+      border: none;
+      border-radius: 10px;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      letter-spacing: 0.03em;
+      margin-top: 0.5rem;
+    }
+    .submit-btn:hover { background: var(--brown-mid); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(44,26,14,0.3); }
+    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.25rem 0;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .back-link a {
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .back-link a:hover { text-decoration: underline; }
+
+    .terms {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 1rem;
+      line-height: 1.5;
+    }
+
+    /* Password strength */
+    .strength-bar {
+      height: 4px;
+      border-radius: 100px;
+      background: #EEE;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%;
+      border-radius: 100px;
+      transition: width 0.3s, background 0.3s;
+      width: 0;
+    }
+    .strength-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 480px) {
+      .card-header { padding: 2rem 1.5rem 1.5rem; }
+      .form-body { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+
+<div class="auth-card">
+  <div class="card-header">
+    <span class="coffee-icon">☕</span>
+    <div class="brand">Hạt <span>Vàng</span> Café</div>
+    <div class="brand-sub">Chào mừng trở lại</div>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Đăng nhập</button>
+    <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Đăng ký</button>
+  </div>
+
+  <div class="form-body">
+
+    <!-- LOGIN FORM -->
+    <div class="form-panel active" id="panel-login">
+      <div class="alert-box err" id="login-alert">⚠️ <span id="login-alert-msg"></span></div>
+      <div class="alert-box ok" id="login-ok">✅ <span></span></div>
+
+      <div class="form-group">
+        <label for="login-username">Tên đăng nhập</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="login-username" placeholder="Nhập tên đăng nhập" autocomplete="username" />
+        </div>
+        <div class="error-msg" id="login-username-err">Vui lòng nhập tên đăng nhập</div>
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Mật khẩu</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="login-password" placeholder="Nhập mật khẩu" autocomplete="current-password" />
+          <button class="eye-toggle" type="button" onclick="togglePass('login-password', this)">👁️</button>
+        </div>
+        <div class="error-msg" id="login-password-err">Vui lòng nhập mật khẩu</div>
+      </div>
+
+      <button class="submit-btn" id="login-btn" onclick="doLogin()">Đăng nhập</button>
+
+      <div class="divider">hoặc</div>
+
+      <div class="back-link">
+        Chưa có tài khoản? <a href="#" onclick="switchTab('register'); return false;">Đăng ký ngay</a>
+      </div>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div class="form-panel" id="panel-register">
+      <div class="alert-box err" id="reg-alert">⚠️ <span id="reg-alert-msg"></span></div>
+      <div class="alert-box ok" id="reg-ok">✅ <span id="reg-ok-msg"></span></div>
+
+      <div class="form-group">
+        <label for="reg-fullname">Họ và tên</label>
+        <div class="input-wrap">
+          <span class="input-icon">🙍</span>
+          <input type="text" id="reg-fullname" placeholder="Nguyễn Văn A" autocomplete="name" />
+        </div>
+        <div class="error-msg" id="reg-fullname-err">Vui lòng nhập họ và tên</div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-username">Tên đăng nhập</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="reg-username" placeholder="vd: nguyen_a" autocomplete="username" />
+        </div>
+        <div class="error-msg" id="reg-username-err">Tên đăng nhập phải 4-20 ký tự, không dấu</div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-email">Email</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉️</span>
+          <input type="email" id="reg-email" placeholder="email@example.com" autocomplete="email" />
+        </div>
+        <div class="error-msg" id="reg-email-err">Email không hợp lệ</div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password">Mật khẩu</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="reg-password" placeholder="Ít nhất 6 ký tự" oninput="checkStrength()" autocomplete="new-password" />
+          <button class="eye-toggle" type="button" onclick="togglePass('reg-password', this)">👁️</button>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+        <div class="strength-label" id="strength-label"></div>
+        <div class="error-msg" id="reg-password-err">Mật khẩu ít nhất 6 ký tự</div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-confirm">Xác nhận mật khẩu</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔑</span>
+          <input type="password" id="reg-confirm" placeholder="Nhập lại mật khẩu" autocomplete="new-password" />
+          <button class="eye-toggle" type="button" onclick="togglePass('reg-confirm', this)">👁️</button>
+        </div>
+        <div class="error-msg" id="reg-confirm-err">Mật khẩu không khớp</div>
+      </div>
+
+      <button class="submit-btn" id="reg-btn" onclick="doRegister()">Tạo tài khoản</button>
+
+      <div class="terms">Khi đăng ký, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi.</div>
+
+      <div class="back-link" style="margin-top:1rem;">
+        Đã có tài khoản? <a href="#" onclick="switchTab('login'); return false;">Đăng nhập</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── KHỞI TẠO DỮ LIỆU ──────────────────────────────────────────────
+  function initUsers() {
+    if (!localStorage.getItem('hvCafeUsers')) {
+      const defaultUsers = [
+        { username: 'admin', password: 'admin123', fullname: 'Admin', email: 'admin@hatvangcafe.vn', role: 'admin', createdAt: new Date().toISOString() }
+      ];
+      localStorage.setItem('hvCafeUsers', JSON.stringify(defaultUsers));
+    }
+  }
+
+  function getUsers() { return JSON.parse(localStorage.getItem('hvCafeUsers') || '[]'); }
+  function saveUsers(u) { localStorage.setItem('hvCafeUsers', JSON.stringify(u)); }
+
+  // Nếu đã đăng nhập rồi thì redirect về trang chủ
+  (function checkSession() {
+    const sess = JSON.parse(localStorage.getItem('hvCafeSession') || 'null');
+    if (sess && sess.username) {
+      const redirect = new URLSearchParams(location.search).get('redirect') || 'index.html';
+      window.location.href = redirect;
+    }
+  })();
+
+  initUsers();
+
+  // ── TẠO PARTICLES ──────────────────────────────────────────────────
+  (function createParticles() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.width = p.style.height = (Math.random() * 4 + 2) + 'px';
+      p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      container.appendChild(p);
+    }
+  })();
+
+  // ── TAB SWITCHER ────────────────────────────────────────────────────
+  function switchTab(tab) {
+    document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+    document.getElementById('panel-register').classList.toggle('active', tab === 'register');
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+    clearErrors();
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.error-msg').forEach(e => { e.classList.remove('show'); });
+    document.querySelectorAll('input').forEach(i => { i.classList.remove('error'); });
+    document.querySelectorAll('.alert-box').forEach(a => { a.classList.remove('show'); });
+  }
+
+  // ── PASSWORD TOGGLE ─────────────────────────────────────────────────
+  function togglePass(id, btn) {
+    const inp = document.getElementById(id);
+    if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+    else { inp.type = 'password'; btn.textContent = '👁️'; }
+  }
+
+  // ── PASSWORD STRENGTH ───────────────────────────────────────────────
+  function checkStrength() {
+    const val = document.getElementById('reg-password').value;
+    const fill = document.getElementById('strength-fill');
+    const label = document.getElementById('strength-label');
+    let score = 0;
+    if (val.length >= 6) score++;
+    if (val.length >= 10) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const levels = [
+      { w: '0%', c: 'transparent', t: '' },
+      { w: '25%', c: '#E74C3C', t: 'Rất yếu' },
+      { w: '50%', c: '#E67E22', t: 'Yếu' },
+      { w: '70%', c: '#F1C40F', t: 'Trung bình' },
+      { w: '85%', c: '#27AE60', t: 'Mạnh' },
+      { w: '100%', c: '#1A7B4A', t: 'Rất mạnh 💪' },
+    ];
+    const lv = levels[Math.min(score, 5)];
+    fill.style.width = lv.w;
+    fill.style.background = lv.c;
+    label.textContent = lv.t;
+    label.style.color = lv.c;
+  }
+
+  // ── VALIDATE HELPERS ────────────────────────────────────────────────
+  function showErr(inputId, errId) {
+    const i = document.getElementById(inputId);
+    const e = document.getElementById(errId);
+    if (i) i.classList.add('error');
+    if (e) e.classList.add('show');
+    return false;
+  }
+  function clearErr(inputId, errId) {
+    const i = document.getElementById(inputId);
+    const e = document.getElementById(errId);
+    if (i) i.classList.remove('error');
+    if (e) e.classList.remove('show');
+  }
+
+  // ── ĐĂNG NHẬP ───────────────────────────────────────────────────────
+  function doLogin() {
+    clearErrors();
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value;
+    let valid = true;
+
+    if (!username) { showErr('login-username', 'login-username-err'); valid = false; }
+    if (!password) { showErr('login-password', 'login-password-err'); valid = false; }
+    if (!valid) return;
+
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true;
+    btn.textContent = 'Đang kiểm tra...';
+
+    setTimeout(() => {
+      const users = getUsers();
+      const user = users.find(u => u.username === username && u.password === password);
+
+      if (!user) {
+        const alert = document.getElementById('login-alert');
+        document.getElementById('login-alert-msg').textContent = 'Tên đăng nhập hoặc mật khẩu không đúng.';
+        alert.classList.add('show');
+        btn.disabled = false;
+        btn.textContent = 'Đăng nhập';
+        return;
+      }
+
+      // Lưu session
+      const session = { username: user.username, fullname: user.fullname, role: user.role, loginAt: new Date().toISOString() };
+      localStorage.setItem('hvCafeSession', JSON.stringify(session));
+
+      btn.textContent = '✅ Thành công!';
+      const ok = document.getElementById('login-ok');
+      ok.querySelector('span').textContent = `Chào mừng, ${user.fullname}! Đang chuyển hướng...`;
+      ok.classList.add('show');
+
+      setTimeout(() => {
+        if (user.role === 'admin') {
+          window.location.href = 'admin.html';
+        } else {
+          const redirect = new URLSearchParams(location.search).get('redirect') || 'index.html';
+          window.location.href = redirect;
+        }
+      }, 1000);
+    }, 600);
+  }
+
+  // ── ĐĂNG KÝ ─────────────────────────────────────────────────────────
+  function doRegister() {
+    clearErrors();
+    const fullname = document.getElementById('reg-fullname').value.trim();
+    const username = document.getElementById('reg-username').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const confirm = document.getElementById('reg-confirm').value;
+    let valid = true;
+
+    if (!fullname) { showErr('reg-fullname', 'reg-fullname-err'); valid = false; }
+    if (!username || username.length < 4 || username.length > 20 || /\s/.test(username)) {
+      showErr('reg-username', 'reg-username-err'); valid = false;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showErr('reg-email', 'reg-email-err'); valid = false;
+    }
+    if (!password || password.length < 6) { showErr('reg-password', 'reg-password-err'); valid = false; }
+    if (password !== confirm) { showErr('reg-confirm', 'reg-confirm-err'); valid = false; }
+    if (!valid) return;
+
+    const btn = document.getElementById('reg-btn');
+    btn.disabled = true;
+    btn.textContent = 'Đang tạo tài khoản...';
+
+    setTimeout(() => {
+      const users = getUsers();
+      if (users.find(u => u.username === username)) {
+        const alert = document.getElementById('reg-alert');
+        document.getElementById('reg-alert-msg').textContent = 'Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.';
+        alert.classList.add('show');
+        btn.disabled = false;
+        btn.textContent = 'Tạo tài khoản';
+        return;
+      }
+      if (users.find(u => u.email === email)) {
+        const alert = document.getElementById('reg-alert');
+        document.getElementById('reg-alert-msg').textContent = 'Email này đã được đăng ký.';
+        alert.classList.add('show');
+        btn.disabled = false;
+        btn.textContent = 'Tạo tài khoản';
+        return;
+      }
+
+      users.push({ username, password, fullname, email, role: 'customer', createdAt: new Date().toISOString() });
+      saveUsers(users);
+
+      const ok = document.getElementById('reg-ok');
+      document.getElementById('reg-ok-msg').textContent = 'Tài khoản đã được tạo! Đang chuyển đến đăng nhập...';
+      ok.classList.add('show');
+      btn.textContent = '✅ Thành công!';
+
+      setTimeout(() => {
+        document.getElementById('login-username').value = username;
+        document.getElementById('login-password').value = '';
+        switchTab('login');
+        btn.disabled = false;
+        btn.textContent = 'Tạo tài khoản';
+      }, 1500);
+    }, 600);
+  }
+
+  // Enter key support
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const loginActive = document.getElementById('panel-login').classList.contains('active');
+    if (loginActive) doLogin();
+    else doRegister();
+  });
+</script>
+</body>
+</html>

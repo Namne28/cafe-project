@@ -1,0 +1,63 @@
+{
+  "categories": [
+    {
+      "id": "ca-phe",
+      "name": "Cà Phê Việt",
+      "icon": "☕",
+      "items": [
+        { "id": 1, "name": "Cà Phê Đen", "price": 25000, "desc": "Cà phê phin truyền thống, đậm đà", "hot": true, "cold": true, "popular": false },
+        { "id": 2, "name": "Cà Phê Sữa", "price": 30000, "desc": "Cà phê phin với sữa đặc Ông Thọ", "hot": true, "cold": true, "popular": true },
+        { "id": 3, "name": "Bạc Xỉu", "price": 35000, "desc": "Nhiều sữa ít cà phê, ngọt nhẹ", "hot": true, "cold": true, "popular": true },
+        { "id": 4, "name": "Cà Phê Trứng", "price": 45000, "desc": "Cà phê Hà Nội đặc biệt với kem trứng", "hot": true, "cold": false, "popular": false },
+        { "id": 5, "name": "Cà Phê Muối", "price": 45000, "desc": "Phong cách Huế, cân bằng mặn ngọt", "hot": false, "cold": true, "popular": true }
+      ]
+    },
+    {
+      "id": "espresso",
+      "name": "Espresso",
+      "icon": "🫘",
+      "items": [
+        { "id": 6, "name": "Espresso", "price": 35000, "desc": "Shot espresso nguyên chất, mạnh", "hot": true, "cold": false, "popular": false },
+        { "id": 7, "name": "Americano", "price": 40000, "desc": "Espresso pha loãng với nước nóng", "hot": true, "cold": true, "popular": false },
+        { "id": 8, "name": "Latte", "price": 55000, "desc": "Espresso với sữa tươi steamed mịn", "hot": true, "cold": true, "popular": true },
+        { "id": 9, "name": "Cappuccino", "price": 55000, "desc": "Espresso, sữa và foam bọt sữa dày", "hot": true, "cold": false, "popular": false },
+        { "id": 10, "name": "Flat White", "price": 55000, "desc": "Double espresso với sữa microfoam", "hot": true, "cold": false, "popular": false },
+        { "id": 11, "name": "Mocha", "price": 60000, "desc": "Espresso, sữa và chocolate", "hot": true, "cold": true, "popular": true }
+      ]
+    },
+    {
+      "id": "tra",
+      "name": "Trà & Trà Sữa",
+      "icon": "🍵",
+      "items": [
+        { "id": 12, "name": "Trà Đào Cam Sả", "price": 45000, "desc": "Trà thơm với đào, cam tươi và sả", "hot": false, "cold": true, "popular": true },
+        { "id": 13, "name": "Trà Sữa Trân Châu", "price": 50000, "desc": "Trà sữa đài loan với trân châu đen", "hot": false, "cold": true, "popular": true },
+        { "id": 14, "name": "Trà Sữa Matcha", "price": 55000, "desc": "Matcha Nhật Bản với sữa tươi", "hot": true, "cold": true, "popular": true },
+        { "id": 15, "name": "Trà Sen Vàng", "price": 45000, "desc": "Trà ướp hương sen Hồ Tây tinh tế", "hot": true, "cold": true, "popular": false },
+        { "id": 16, "name": "Hồng Trà Sữa", "price": 50000, "desc": "Hồng trà Sri Lanka với sữa tươi", "hot": true, "cold": true, "popular": false }
+      ]
+    },
+    {
+      "id": "sinh-to",
+      "name": "Sinh Tố & Nước Ép",
+      "icon": "🥤",
+      "items": [
+        { "id": 17, "name": "Sinh Tố Bơ", "price": 55000, "desc": "Bơ sáp Đắk Lắk xay với sữa đặc", "hot": false, "cold": true, "popular": true },
+        { "id": 18, "name": "Nước Ép Cam", "price": 45000, "desc": "Cam tươi ép nguyên chất, vitamin C", "hot": false, "cold": true, "popular": false },
+        { "id": 19, "name": "Sinh Tố Xoài", "price": 50000, "desc": "Xoài cát Hòa Lộc ngọt thơm", "hot": false, "cold": true, "popular": true },
+        { "id": 20, "name": "Detox Dưa Leo Bạc Hà", "price": 50000, "desc": "Dưa leo, bạc hà, chanh thanh mát", "hot": false, "cold": true, "popular": false }
+      ]
+    },
+    {
+      "id": "dac-biet",
+      "name": "Đặc Biệt",
+      "icon": "✨",
+      "items": [
+        { "id": 21, "name": "Cốt Dừa Cà Phê", "price": 65000, "desc": "Cà phê đá với nước cốt dừa béo ngậy", "hot": false, "cold": true, "popular": true },
+        { "id": 22, "name": "Dalgona Coffee", "price": 60000, "desc": "Kem cà phê đánh bông trên sữa lạnh", "hot": false, "cold": true, "popular": true },
+        { "id": 23, "name": "Brown Sugar Latte", "price": 65000, "desc": "Sữa tươi với đường nâu caramel", "hot": true, "cold": true, "popular": false },
+        { "id": 24, "name": "Kem Cheese Matcha", "price": 70000, "desc": "Matcha với kem phô mai mặn béo", "hot": false, "cold": true, "popular": true }
+      ]
+    }
+  ]
+}
