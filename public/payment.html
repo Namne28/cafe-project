@@ -1079,40 +1079,48 @@
 
           <!-- MOMO PANEL -->
           <div class="ewallet-panel" id="momo-panel">
-            <div class="ewallet-qr-wrap">
-              <img id="momo-qr" src="" alt="MoMo QR" style="border-color:#AE2070;" />
+            <!-- QR thật từ tài khoản MoMo -->
+            <div style="position:relative;overflow:hidden;border-radius:16px;border:2px solid #AE2070;background:#FFF0F6;margin-bottom:0.75rem;">
+              <div style="overflow:hidden;height:240px;position:relative;">
+                <img src="images/momo-qr.png" alt="Mã QR MoMo - PHẠM PHƯƠNG NAM"
+                  style="width:100%;object-fit:cover;object-position:center 28%;display:block;" />
+              </div>
+              <div style="position:absolute;top:8px;left:8px;background:#AE2070;color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;">📱 QR Mô MoMo chính thức</div>
             </div>
-            <div style="margin-top:1rem;">
-              <div style="font-size:0.88rem;font-weight:700;color:#AE2070;">Ví MoMo</div>
-              <div style="font-size:0.82rem;color:var(--text-muted);margin:4px 0;">Chủ Ví: <strong>Phạm Phương Nam</strong></div>
-              <div style="font-size:0.82rem;color:var(--text-muted);margin:4px 0;">ĐT: <strong>0934 467 977</strong>
+            <div>
+              <div style="font-size:0.88rem;font-weight:700;color:#AE2070;margin-bottom:4px;">Ví MoMo • Phạm Phương Nam</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin:3px 0;">ĐT: <strong>0934 467 977</strong>
                 <button class="copy-btn" onclick="copyText('momo-phone')">Sao chép</button>
               </div>
               <span id="momo-phone" style="display:none;">0934467977</span>
               <div class="qr-amount" id="momo-amount">0đ</div>
               <div class="qr-note">Nội dung: <strong id="momo-note">HATVANG-00000</strong></div>
               <div class="qr-timer">
-                <div class="timer-dot" style="background:#AE2070;"></div> Quét QR bằng app MoMo để thanh toán
+                <div class="timer-dot" style="background:#AE2070;"></div> Mở app MoMo → Quét mã → Thanh toán
               </div>
             </div>
           </div>
 
           <!-- ZALOPAY PANEL -->
           <div class="ewallet-panel" id="zalo-panel">
-            <div class="ewallet-qr-wrap">
-              <img id="zalo-qr" src="" alt="ZaloPay QR" style="border-color:#0068FF;" />
+            <!-- QR thật từ tài khoản ZaloPay -->
+            <div style="position:relative;overflow:hidden;border-radius:16px;border:2px solid #0068FF;background:#F0F6FF;margin-bottom:0.75rem;">
+              <div style="overflow:hidden;height:240px;position:relative;">
+                <img src="images/zalo-qr.png" alt="Mã QR ZaloPay - PHAM PHUONG NAM"
+                  style="width:100%;object-fit:cover;object-position:center 22%;display:block;" />
+              </div>
+              <div style="position:absolute;top:8px;left:8px;background:#0068FF;color:#fff;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;">📱 QR ZaloPay chính thức</div>
             </div>
-            <div style="margin-top:1rem;">
-              <div style="font-size:0.88rem;font-weight:700;color:#0068FF;">ZaloPay</div>
-              <div style="font-size:0.82rem;color:var(--text-muted);margin:4px 0;">Chủ tài khoản: <strong>Phạm Phương Nam</strong></div>
-              <div style="font-size:0.82rem;color:var(--text-muted);margin:4px 0;">ĐT: <strong>0934 467 977</strong>
+            <div>
+              <div style="font-size:0.88rem;font-weight:700;color:#0068FF;margin-bottom:4px;">ZaloPay • Pham Phuong Nam</div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin:3px 0;">ĐT: <strong>0934 467 977</strong>
                 <button class="copy-btn" onclick="copyText('zalo-phone')">Sao chép</button>
               </div>
               <span id="zalo-phone" style="display:none;">0934467977</span>
               <div class="qr-amount" id="zalo-amount">0đ</div>
               <div class="qr-note">Nội dung: <strong id="zalo-note">HATVANG-00000</strong></div>
               <div class="qr-timer">
-                <div class="timer-dot" style="background:#0068FF;"></div> Quét QR bằng ZaloPay để thanh toán
+                <div class="timer-dot" style="background:#0068FF;"></div> Mở app ZaloPay → Quét mã → Thanh toán
               </div>
             </div>
           </div>
