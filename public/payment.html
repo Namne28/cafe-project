@@ -1411,11 +1411,15 @@
         startTimer();
       } else if (method === 'momo') {
         document.getElementById('momo-panel').classList.add('show');
-        updateEwalletQR('momo', grand);
+        // Cập nhật số tiền và nội dung (QR là ảnh tĩnh)
+        document.getElementById('momo-amount').textContent = grand.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('momo-note').textContent = 'HATVANG-' + orderRef;
         startTimer();
       } else if (method === 'zalo') {
         document.getElementById('zalo-panel').classList.add('show');
-        updateEwalletQR('zalo', grand);
+        // Cập nhật số tiền và nội dung (QR là ảnh tĩnh)
+        document.getElementById('zalo-amount').textContent = grand.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('zalo-note').textContent = 'HATVANG-' + orderRef;
         startTimer();
       } else if (method === 'cash') {
         document.getElementById('cash-panel').classList.add('show');
