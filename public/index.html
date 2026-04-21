@@ -602,7 +602,7 @@
   let activeTemp = 'all';
 
   async function loadMenu() {
-    const res = await fetch('/data/menu.json');
+    const res = await fetch('data/menu.json');
     menuData = await res.json();
 
     // Merge mon tuy chinh tu admin (localStorage)
