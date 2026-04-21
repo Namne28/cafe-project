@@ -601,32 +601,46 @@
   let activeCategory = 'all';
   let activeTemp = 'all';
 
-  async function loadMenu() {
-    const res = await fetch('data/menu.json');
-    menuData = await res.json();
+  // ── FIREBASE ────────────────────────────────────────────────────────
+  const FB = 'https://hat-vang-cafe-default-rtdb.firebaseio.com';
+  async function fbGet(path) {
+    try { const r = await fetch(`${FB}/${path}.json`); return r.ok ? await r.json() : null; }
+    catch { return null; }
+  }
 
-    // Merge mon tuy chinh tu admin (localStorage)
-    const customItems = JSON.parse(localStorage.getItem('hvCafeMenuCustom') || '[]');
-    if (customItems.length > 0) {
-      const catMeta = {
-        'ca-phe':   { name: 'Ca Phe Viet',     icon: '\u2615' },
-        'espresso': { name: 'Espresso',         icon: '\ud83e\uded8' },
-        'tra':      { name: 'Tra & Tra Sua',    icon: '\ud83c\udf75' },
-        'sinh-to':  { name: 'Sinh To & Nuoc Ep', icon: '\ud83e\udd64' },
-        'dac-biet': { name: 'Dac Biet',         icon: '\u2728' },
-      };
-      customItems.forEach(function(ci) {
-        var cat = menuData.categories.find(function(c) { return c.id === ci.category; });
-        if (!cat) {
-          var meta = catMeta[ci.category] || { name: ci.category, icon: '\ud83c\udf7d\ufe0f' };
-          cat = { id: ci.category, name: meta.name, icon: meta.icon, items: [] };
-          menuData.categories.push(cat);
-        }
-        if (!cat.items.find(function(x) { return String(x.id) === String(ci.id); })) {
-          cat.items.push(Object.assign({}, ci));
-        }
-      });
-    }
+  async function loadMenu() {
+    // Load menu goc tu file tinh
+    try {
+      const res = await fetch('data/menu.json');
+      menuData = await res.json();
+    } catch(e) { menuData = { categories: [] }; }
+
+    // Load custom items tu Firebase (dong bo moi thiet bi)
+    try {
+      const fb = await fbGet('customItems');
+      const customItems = fb ? (Array.isArray(fb) ? fb : Object.values(fb)) :
+                          JSON.parse(localStorage.getItem('hvCafeMenuCustom') || '[]');
+      if (customItems.length > 0) {
+        const catMeta = {
+          'ca-phe':   { name: 'Cà Phê Việt',       icon: '☕' },
+          'espresso': { name: 'Espresso',           icon: '🫘' },
+          'tra':      { name: 'Trà & Trà Sữa',     icon: '🍵' },
+          'sinh-to':  { name: 'Sinh Tố & Nước Ép', icon: '🥤' },
+          'dac-biet': { name: 'Đặc Biệt',          icon: '✨' },
+        };
+        customItems.forEach(function(ci) {
+          var cat = menuData.categories.find(function(c) { return c.id === ci.category; });
+          if (!cat) {
+            var meta = catMeta[ci.category] || { name: ci.category, icon: '🍽️' };
+            cat = { id: ci.category, name: meta.name, icon: meta.icon, items: [] };
+            menuData.categories.push(cat);
+          }
+          if (!cat.items.find(function(x) { return String(x.id) === String(ci.id); })) {
+            cat.items.push(Object.assign({}, ci));
+          }
+        });
+      }
+    } catch(e) {}
 
     buildFilterTabs();
     renderMenu();

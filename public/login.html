@@ -462,33 +462,35 @@
 </div>
 
 <script>
+  // ── FIREBASE ──────────────────────────────────────────────────────────
+  const FB = 'https://hat-vang-cafe-default-rtdb.firebaseio.com';
+  async function fbGet(path) {
+    try { const r = await fetch(`${FB}/${path}.json`); return r.ok ? await r.json() : null; } catch { return null; }
+  }
+  async function fbSet(path, data) {
+    try { await fetch(`${FB}/${path}.json`, { method:'PUT', body:JSON.stringify(data), headers:{'Content-Type':'application/json'} }); } catch {}
+  }
+
   // ── TÀI KHOẢN CỐ ĐỊNH (hoạt động trên mọi thiết bị) ──────────────
   const BUILTIN_ACCOUNTS = [
     { username: 'admin', password: 'admin123', fullname: 'Quản trị viên', email: 'admin@hatvangcafe.vn', role: 'admin' }
   ];
 
-  function initUsers() {
-    // Đảm bảo admin luôn tồn tại trong localStorage
-    const users = JSON.parse(localStorage.getItem('hvCafeUsers') || '[]');
-    let changed = false;
-    BUILTIN_ACCOUNTS.forEach(ba => {
-      if (!users.find(u => u.username === ba.username)) {
-        users.push({ ...ba, createdAt: new Date().toISOString() });
-        changed = true;
-      }
-    });
-    if (changed) localStorage.setItem('hvCafeUsers', JSON.stringify(users));
-  }
-
-  function getUsers() {
-    const stored = JSON.parse(localStorage.getItem('hvCafeUsers') || '[]');
+  async function getUsers() {
+    // Thử Firebase trước
+    const fb = await fbGet('users');
+    let users = fb ? Object.values(fb) : JSON.parse(localStorage.getItem('hvCafeUsers') || '[]');
     // Luôn merge với tài khoản cố định
-    BUILTIN_ACCOUNTS.forEach(ba => {
-      if (!stored.find(u => u.username === ba.username)) stored.unshift({ ...ba, createdAt: '' });
-    });
-    return stored;
+    BUILTIN_ACCOUNTS.forEach(ba => { if (!users.find(u => u.username === ba.username)) users.unshift({...ba, createdAt:''}); });
+    return users;
   }
-  function saveUsers(u) { localStorage.setItem('hvCafeUsers', JSON.stringify(u)); }
+  async function saveUsers(users) {
+    // Lọc bỏ tài khoản cố định trước khi lưu
+    const toSave = users.filter(u => !BUILTIN_ACCOUNTS.find(b => b.username === u.username));
+    const obj = {}; toSave.forEach(u => { obj[u.username] = u; });
+    await fbSet('users', obj);
+    localStorage.setItem('hvCafeUsers', JSON.stringify(toSave));
+  }
 
   // Nếu đã đăng nhập rồi thì redirect về trang chủ
   (function checkSession() {
@@ -498,8 +500,6 @@
       window.location.href = redirect;
     }
   })();
-
-  initUsers();
 
   // ── TẠO PARTICLES ──────────────────────────────────────────────────
   (function createParticles() {
@@ -579,8 +579,8 @@
     if (e) e.classList.remove('show');
   }
 
-  // ── ĐĂNG NHẬP ───────────────────────────────────────────────────────
-  function doLogin() {
+  // ── ĐĂNG NHẬP ─────────────────────────────────────────────────────────────
+  async function doLogin() {
     clearErrors();
     const username = document.getElementById('login-username').value.trim();
     const password = document.getElementById('login-password').value;
@@ -594,8 +594,8 @@
     btn.disabled = true;
     btn.textContent = 'Đang kiểm tra...';
 
-    setTimeout(() => {
-      const users = getUsers();
+    setTimeout(async () => {
+      const users = await getUsers();
       const user = users.find(u => u.username === username && u.password === password);
 
       if (!user) {
@@ -627,8 +627,8 @@
     }, 600);
   }
 
-  // ── ĐĂNG KÝ ─────────────────────────────────────────────────────────
-  function doRegister() {
+  // ── ĐĂNG KÝ ─────────────────────────────────────────────────────────────
+  async function doRegister() {
     clearErrors();
     const fullname = document.getElementById('reg-fullname').value.trim();
     const username = document.getElementById('reg-username').value.trim();
@@ -652,8 +652,8 @@
     btn.disabled = true;
     btn.textContent = 'Đang tạo tài khoản...';
 
-    setTimeout(() => {
-      const users = getUsers();
+    setTimeout(async () => {
+      const users = await getUsers();
       if (users.find(u => u.username === username)) {
         const alert = document.getElementById('reg-alert');
         document.getElementById('reg-alert-msg').textContent = 'Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.';
@@ -672,7 +672,7 @@
       }
 
       users.push({ username, password, fullname, email, role: 'customer', createdAt: new Date().toISOString() });
-      saveUsers(users);
+      await saveUsers(users);
 
       const ok = document.getElementById('reg-ok');
       document.getElementById('reg-ok-msg').textContent = 'Tài khoản đã được tạo! Đang chuyển đến đăng nhập...';

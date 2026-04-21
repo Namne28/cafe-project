@@ -752,6 +752,17 @@
     window.location.href = 'login.html?redirect=admin.html';
   }
 
+  // ── FIREBASE SYNC ──────────────────────────────────────────────────
+  const FB = 'https://hat-vang-cafe-default-rtdb.firebaseio.com';
+  async function fbGet(path) {
+    try { const r = await fetch(`${FB}/${path}.json`); return r.ok ? await r.json() : null; }
+    catch { return null; }
+  }
+  async function fbSet(path, data) {
+    try { await fetch(`${FB}/${path}.json`, { method:'PUT', body:JSON.stringify(data), headers:{'Content-Type':'application/json'} }); }
+    catch {}
+  }
+
   // ── INIT UI ──────────────────────────────────────────────────────────
   document.getElementById('admin-name').textContent = session.fullname || session.username;
   document.getElementById('admin-avatar').textContent = (session.fullname || session.username)[0].toUpperCase();
@@ -765,11 +776,26 @@
   updateClock();
   setInterval(updateClock, 1000);
 
-  // ── DATA HELPERS ────────────────────────────────────────────────────
-  function getUsers() { return JSON.parse(localStorage.getItem('hvCafeUsers') || '[]'); }
-  function saveUsers(u) { localStorage.setItem('hvCafeUsers', JSON.stringify(u)); }
-  function getOrders() { return JSON.parse(localStorage.getItem('hvCafeOrders') || '[]'); }
-  function saveOrders(o) { localStorage.setItem('hvCafeOrders', JSON.stringify(o)); }
+  // ── DATA HELPERS (Firebase + localStorage fallback) ──────────────────
+  async function getUsers() {
+    const fb = await fbGet('users');
+    if (fb) { const u = Object.values(fb); localStorage.setItem('hvCafeUsers', JSON.stringify(u)); return u; }
+    return JSON.parse(localStorage.getItem('hvCafeUsers') || '[]');
+  }
+  async function saveUsers(users) {
+    const obj = {}; users.forEach(u => { obj[u.username] = u; });
+    await fbSet('users', obj);
+    localStorage.setItem('hvCafeUsers', JSON.stringify(users));
+  }
+  async function getOrders() {
+    const fb = await fbGet('orders');
+    if (fb) { const o = Array.isArray(fb) ? fb : Object.values(fb); localStorage.setItem('hvCafeOrders', JSON.stringify(o)); return o; }
+    return JSON.parse(localStorage.getItem('hvCafeOrders') || '[]');
+  }
+  async function saveOrders(orders) {
+    await fbSet('orders', orders);
+    localStorage.setItem('hvCafeOrders', JSON.stringify(orders));
+  }
 
   function fmtMoney(n) { return n.toLocaleString('vi-VN') + 'đ'; }
   function fmtTime(iso) {
@@ -801,15 +827,15 @@
   async function loadMenuData() {
     if (menuData) return menuData;
     try {
-      const res = await fetch('/data/menu.json');
+      const res = await fetch('data/menu.json');
       menuData = await res.json();
     } catch(e) { menuData = { categories: [] }; }
     return menuData;
   }
 
   async function renderDashboard() {
-    const orders = getOrders();
-    const users = getUsers();
+    const orders = await getOrders();
+    const users = await getUsers();
     const menu = await loadMenuData();
     const totalItems = menu.categories.reduce((s, c) => s + c.items.length, 0);
 
@@ -899,8 +925,8 @@
   ];
   const DEMO_NAMES = ['Nguyễn Văn A','Trần Thị B','Lê Hoàng C','Phạm Minh D','Vũ Thu E','Đỗ Hải F'];
 
-  function addDemoOrder() {
-    const orders = getOrders();
+  async function addDemoOrder() {
+    const orders = await getOrders();
     const items = DEMO_ITEMS[Math.floor(Math.random() * DEMO_ITEMS.length)];
     const total = items.reduce((s, i) => s + i.price * i.qty, 0);
     const order = {
@@ -912,14 +938,14 @@
       status: 'done'
     };
     orders.push(order);
-    saveOrders(orders);
+    await saveOrders(orders);
     renderOrders();
     renderDashboard();
     showToast('✅ Đã thêm đơn demo!', 'ok');
   }
 
-  function renderOrders() {
-    const orders = [...getOrders()].reverse();
+  async function renderOrders() {
+    const orders = [...(await getOrders())].reverse();
     const tbody = document.getElementById('all-orders');
     document.getElementById('orders-badge').textContent = orders.filter(o => new Date(o.createdAt).toDateString() === new Date().toDateString()).length;
 
@@ -947,10 +973,9 @@
       '🗑️',
       'Xóa đơn hàng',
       'Bạn có chắc muốn xóa đơn hàng này không? Hành động này không thể hoàn tác.',
-      () => {
-        // So sánh dạng string để tránh lỗi type mismatch khi parse JSON
-        const orders = getOrders().filter(o => String(o.id) !== String(id));
-        saveOrders(orders);
+      async () => {
+        const orders = (await getOrders()).filter(o => String(o.id) !== String(id));
+        await saveOrders(orders);
         renderOrders();
         renderDashboard();
         showToast('🗑️ Đã xóa đơn hàng', 'err');
@@ -959,8 +984,15 @@
   }
 
   // ── MENU CRUD ─────────────────────────────────────────────────────────
-  function getCustomItems() { return JSON.parse(localStorage.getItem('hvCafeMenuCustom') || '[]'); }
-  function saveCustomItems(items) { localStorage.setItem('hvCafeMenuCustom', JSON.stringify(items)); }
+  async function getCustomItems() {
+    const fb = await fbGet('customItems');
+    if (fb) { const items = Array.isArray(fb) ? fb : Object.values(fb); localStorage.setItem('hvCafeMenuCustom', JSON.stringify(items)); return items; }
+    return JSON.parse(localStorage.getItem('hvCafeMenuCustom') || '[]');
+  }
+  async function saveCustomItems(items) {
+    await fbSet('customItems', items);
+    localStorage.setItem('hvCafeMenuCustom', JSON.stringify(items));
+  }
 
   let _editingItemId = null; // null = thêm mới, có giá trị = sửa
 
@@ -1004,7 +1036,7 @@
     setTimeout(() => document.getElementById('im-name').focus(), 100);
   }
 
-  function saveMenuItem() {
+  async function saveMenuItem() {
     const name  = document.getElementById('im-name').value.trim();
     const desc  = document.getElementById('im-desc').value.trim();
     const cat   = document.getElementById('im-category').value;
@@ -1019,7 +1051,8 @@
     if (!hot && !cold) { errEl.textContent = '⚠️ Vui lòng chọn ít nhất Nóng hoặc Lạnh.'; errEl.style.display='block'; return; }
     errEl.style.display = 'none';
 
-    const items = getCustomItems();
+    showToast('⏳ Đang lưu...', '');
+    const items = await getCustomItems();
     if (_editingItemId !== null) {
       const idx = items.findIndex(i => i.id === _editingItemId);
       if (idx !== -1) { items[idx] = { ...items[idx], name, desc, category: cat, price, hot, cold, popular }; }
@@ -1027,18 +1060,17 @@
       const newId = 'c_' + Date.now();
       items.push({ id: newId, name, desc, category: cat, price, hot, cold, popular, createdAt: new Date().toISOString() });
     }
-    saveCustomItems(items);
+    await saveCustomItems(items);
     closeModal('modal-item');
     renderMenuAdmin();
-    // Cập nhật stat
     updateMenuStat();
     showToast(_editingItemId ? '✅ Đã cập nhật món!' : '✅ Đã thêm món mới!', 'ok');
   }
 
   function deleteCustomItem(id) {
-    showConfirm('🗑️', 'Xóa món', 'Bạn có chắc muốn xóa món này khỏi thực đơn?', () => {
-      const items = getCustomItems().filter(i => i.id !== id);
-      saveCustomItems(items);
+    showConfirm('🗑️', 'Xóa món', 'Bạn có chắc muốn xóa món này khỏi thực đơn?', async () => {
+      const items = (await getCustomItems()).filter(i => i.id !== id);
+      await saveCustomItems(items);
       renderMenuAdmin();
       updateMenuStat();
       showToast('🗑️ Đã xóa món', 'err');
@@ -1056,7 +1088,7 @@
 
   async function renderMenuAdmin() {
     const menu = await loadMenuData();
-    const customItems = getCustomItems();
+    const customItems = await getCustomItems();
     const el = document.getElementById('menu-admin-content');
 
     // Gom custom items theo category
@@ -1120,8 +1152,8 @@
   }
 
   // ── USERS ─────────────────────────────────────────────────────────────
-  function renderUsers() {
-    const users = getUsers();
+  async function renderUsers() {
+    const users = await getUsers();
     const tbody = document.getElementById('users-table');
     tbody.innerHTML = users.map((u, i) => `
       <tr>
@@ -1144,7 +1176,7 @@
     openModal('modal-user');
   }
 
-  function saveNewUser() {
+  async function saveNewUser() {
     const fullname = document.getElementById('mu-fullname').value.trim();
     const username = document.getElementById('mu-username').value.trim();
     const email = document.getElementById('mu-email').value.trim();
@@ -1153,11 +1185,11 @@
 
     if (!fullname || !username || !email || !password) return showToast('⚠️ Vui lòng điền đầy đủ!', 'err');
 
-    const users = getUsers();
+    const users = await getUsers();
     if (users.find(u => u.username === username)) return showToast('⚠️ Tên đăng nhập đã tồn tại!', 'err');
 
     users.push({ username, password, fullname, email, role, createdAt: new Date().toISOString() });
-    saveUsers(users);
+    await saveUsers(users);
     closeModal('modal-user');
     renderUsers();
     showToast('✅ Đã thêm người dùng!', 'ok');
@@ -1169,9 +1201,9 @@
       '👤',
       'Xóa người dùng',
       `Bạn có chắc muốn xóa tài khoản "${username}" không? Hành động này không thể hoàn tác.`,
-      () => {
-        const users = getUsers().filter(u => u.username !== username);
-        saveUsers(users);
+      async () => {
+        const users = (await getUsers()).filter(u => u.username !== username);
+        await saveUsers(users);
         renderUsers();
         showToast('🗑️ Đã xóa người dùng', 'err');
       }
@@ -1179,8 +1211,8 @@
   }
 
   // ── SETTINGS ──────────────────────────────────────────────────────────
-  function loadSettings() {
-    const users = getUsers();
+  async function loadSettings() {
+    const users = await getUsers();
     const me = users.find(u => u.username === session.username);
     if (!me) return;
     document.getElementById('set-fullname').value = me.fullname || '';
@@ -1188,15 +1220,15 @@
     document.getElementById('set-password').value = '';
   }
 
-  function saveSettings() {
-    const users = getUsers();
+  async function saveSettings() {
+    const users = await getUsers();
     const idx = users.findIndex(u => u.username === session.username);
     if (idx === -1) return;
     users[idx].fullname = document.getElementById('set-fullname').value.trim() || users[idx].fullname;
     users[idx].email = document.getElementById('set-email').value.trim() || users[idx].email;
     const newPass = document.getElementById('set-password').value;
     if (newPass && newPass.length >= 6) users[idx].password = newPass;
-    saveUsers(users);
+    await saveUsers(users);
 
     // Update session
     session.fullname = users[idx].fullname;

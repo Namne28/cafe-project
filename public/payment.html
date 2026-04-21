@@ -1282,6 +1282,15 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    // ── FIREBASE ────────────────────────────────────────────────────────
+    const FB = 'https://hat-vang-cafe-default-rtdb.firebaseio.com';
+    async function fbGet(path) {
+      try { const r = await fetch(`${FB}/${path}.json`); return r.ok ? await r.json() : null; } catch { return null; }
+    }
+    async function fbSet(path, data) {
+      try { await fetch(`${FB}/${path}.json`, { method:'PUT', body:JSON.stringify(data), headers:{'Content-Type':'application/json'} }); } catch {}
+    }
+
     // ── CART DATA ──────────────────────────────────────────────────────
     let cartData = [];
     let subtotal = 0;
@@ -1496,16 +1505,16 @@
       btn.disabled = true;
       btn.textContent = 'Đang xử lý...';
 
-      setTimeout(() => {
-        // Save to localStorage orders
-        saveOrder(name, phone);
+      setTimeout(async () => {
+        // Save to Firebase + localStorage
+        await saveOrder(name, phone);
         showSuccessModal();
         btn.disabled = false;
         btn.textContent = 'Xác nhận thanh toán →';
       }, 1500);
     }
 
-    function saveOrder(name, phone) {
+    async function saveOrder(name, phone) {
       const orders = JSON.parse(localStorage.getItem('hvCafeOrders') || '[]');
       const mode = document.getElementById('cust-mode').value;
       const shipFee = mode === 'delivery' ? 15000 : 0;
@@ -1514,7 +1523,7 @@
 
       const methodLabels = { bank: `Chuyển khoản ${selectedBank.name}`, momo: 'MoMo', zalo: 'ZaloPay', cash: 'Tiền mặt' };
 
-      orders.push({
+      const newOrder = {
         id: Date.now(),
         orderCode: orderRef,
         customer: name,
@@ -1531,9 +1540,14 @@
         table: document.getElementById('cust-table').value,
         createdAt: new Date().toISOString(),
         status: 'done'
-      });
+      };
+
+      orders.push(newOrder);
       localStorage.setItem('hvCafeOrders', JSON.stringify(orders));
       localStorage.removeItem('hvCafePendingCart'); // Clear cart
+
+      // Đồng bộ lên Firebase để admin thấy ngay
+      await fbSet('orders', orders);
     }
 
     function showSuccessModal() {
