@@ -468,6 +468,9 @@
     <button class="nav-item" onclick="showPanel('users')" id="nav-users">
       <span class="icon">👥</span> Người dùng
     </button>
+    <button class="nav-item" onclick="showPanel('promos')" id="nav-promos">
+      <span class="icon">🎫</span> Mã giảm giá
+    </button>
 
     <div class="nav-label">Hệ thống</div>
     <button class="nav-item" onclick="showPanel('settings')" id="nav-settings">
@@ -611,6 +614,25 @@
     </div>
   </div>
 
+  <!-- ── PROMOS ── -->
+  <div class="panel" id="panel-promos">
+    <div class="section-head">
+      <h2>Quản lý mã giảm giá</h2>
+      <button class="btn btn-gold" onclick="openPromoModal()">+ Tạo mã mới</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Mã</th><th>Loại</th><th>Giá trị</th><th>Đã dùng</th>
+            <th>Giới hạn</th><th>Hết hạn</th><th>Trạng thái</th><th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="promos-table"></tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- ── SETTINGS ── -->
   <div class="panel" id="panel-settings">
     <div style="max-width:600px;">
@@ -663,6 +685,47 @@
     <div class="confirm-btns">
       <button class="confirm-cancel" onclick="closeConfirm()">Hủy bỏ</button>
       <button class="confirm-ok" id="confirm-ok-btn">Xóa</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Tạo Mã Giảm Giá -->
+<div class="modal-overlay" id="modal-promo">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-title">🎫 Tạo mã giảm giá</div>
+    <div class="field">
+      <label>Mã giảm giá * (chữ hoa, không dấu)</label>
+      <input type="text" id="pm-code" placeholder="VD: CAFE20" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')" />
+    </div>
+    <div class="field">
+      <label>Mô tả ngắn</label>
+      <input type="text" id="pm-desc" placeholder="VD: Giảm 20% cho khách mới" />
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+      <div class="field">
+        <label>Loại giảm giá *</label>
+        <select id="pm-type">
+          <option value="percent">% Phần trăm</option>
+          <option value="fixed">💵 Số tiền cố định (đ)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Giá trị * <span id="pm-value-unit" style="color:var(--gold);">(%)  </span></label>
+        <input type="number" id="pm-value" placeholder="10" min="1" />
+      </div>
+      <div class="field">
+        <label>Giới hạn lượt dùng (0 = không giới hạn)</label>
+        <input type="number" id="pm-maxusage" value="0" min="0" />
+      </div>
+      <div class="field">
+        <label>Ngày hết hạn (để trống = không giới hạn)</label>
+        <input type="date" id="pm-expires" />
+      </div>
+    </div>
+    <div id="pm-error" style="display:none;background:#FDECEA;color:#C0392B;border-radius:8px;padding:0.6rem 1rem;font-size:0.82rem;margin-bottom:1rem;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-promo')">Hủy</button>
+      <button class="btn btn-gold" onclick="savePromoCode()">💾 Tạo mã</button>
     </div>
   </div>
 </div>
@@ -804,8 +867,8 @@
   }
 
   // ── NAVIGATION ───────────────────────────────────────────────────────
-  const panels = ['dashboard','orders','menu','users','settings'];
-  const titles = { dashboard: 'Tổng quan', orders: 'Đơn hàng', menu: 'Thực đơn', users: 'Người dùng', settings: 'Cài đặt' };
+  const panels = ['dashboard','orders','menu','users','promos','settings'];
+  const titles = { dashboard: 'Tổng quan', orders: 'Đơn hàng', menu: 'Thực đơn', users: 'Người dùng', promos: 'Mã giảm giá', settings: 'Cài đặt' };
 
   function showPanel(name) {
     panels.forEach(p => {
@@ -817,6 +880,7 @@
     if (name === 'orders') renderOrders();
     if (name === 'menu') renderMenuAdmin();
     if (name === 'users') renderUsers();
+    if (name === 'promos') renderPromos();
     if (name === 'settings') loadSettings();
     // close mobile sidebar
     document.getElementById('sidebar').classList.remove('open');
@@ -1296,6 +1360,106 @@
   document.getElementById('confirm-overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('confirm-overlay')) closeConfirm();
   });
+
+  // ── PROMO CODES ────────────────────────────────────────────────────────
+  async function getPromoCodes() {
+    const fb = await fbGet('promoCodes');
+    return fb || {};
+  }
+  async function savePromoCodes(codes) { await fbSet('promoCodes', codes); }
+
+  async function renderPromos() {
+    const codes = await getPromoCodes();
+    const tbody = document.getElementById('promos-table');
+    const entries = Object.values(codes);
+    if (entries.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">🎫</div><br>Chưa có mã giảm giá nào. Tạo mã đầu tiên!</div></td></tr>';
+      return;
+    }
+    const now = new Date().toISOString().slice(0,10);
+    tbody.innerHTML = entries.map(p => {
+      const valLabel = p.type === 'percent' ? `${p.value}%` : `${Number(p.value).toLocaleString('vi-VN')}đ`;
+      const usage = p.maxUsage ? `${p.usedCount||0}/${p.maxUsage}` : `${p.usedCount||0}/∞`;
+      const expired = p.expiresAt && p.expiresAt < now;
+      const isActive = p.active && !expired;
+      const statusBadge = isActive
+        ? '<span class="badge badge-active">Hoạt động</span>'
+        : expired ? '<span class="badge" style="background:#FEF0E6;color:#C25A1A;">Hết hạn</span>'
+        : '<span class="badge" style="background:#F0EBE3;color:var(--text-muted);">Đã tắt</span>';
+      return `<tr>
+        <td><code style="background:#F0EBE3;padding:2px 10px;border-radius:6px;font-weight:700;font-size:0.9rem;letter-spacing:0.05em;">${p.code}</code><br><small style="color:var(--text-muted);">${p.desc||''}</small></td>
+        <td>${p.type==='percent'?'📊 %':'💵 Cố định'}</td>
+        <td><strong style="color:var(--success);font-size:1rem;">-${valLabel}</strong></td>
+        <td style="text-align:center">${p.usedCount||0}</td>
+        <td style="text-align:center">${p.maxUsage||'∞'}</td>
+        <td style="color:var(--text-muted);font-size:0.8rem;">${p.expiresAt||'—'}</td>
+        <td>${statusBadge}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn btn-outline btn-sm" onclick="togglePromo('${p.code}')" style="margin-right:4px;">${p.active?'⏸️ Tắt':'▶️ Bật'}</button>
+          <button class="btn btn-danger btn-sm" onclick="deletePromo('${p.code}')">🗑️</button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function openPromoModal() {
+    ['pm-code','pm-desc','pm-value'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pm-type').value = 'percent';
+    document.getElementById('pm-maxusage').value = '0';
+    document.getElementById('pm-expires').value = '';
+    document.getElementById('pm-error').style.display = 'none';
+    document.getElementById('pm-value-unit').textContent = '(%)';
+    openModal('modal-promo');
+    setTimeout(() => document.getElementById('pm-code').focus(), 100);
+  }
+
+  // Cập nhật label khi đổi loại
+  document.getElementById('pm-type').addEventListener('change', function() {
+    document.getElementById('pm-value-unit').textContent = this.value === 'percent' ? '(%)' : '(đ)';
+  });
+
+  async function savePromoCode() {
+    const code = document.getElementById('pm-code').value.trim().toUpperCase();
+    const desc = document.getElementById('pm-desc').value.trim();
+    const type = document.getElementById('pm-type').value;
+    const value = parseInt(document.getElementById('pm-value').value);
+    const maxUsage = parseInt(document.getElementById('pm-maxusage').value) || 0;
+    const expiresAt = document.getElementById('pm-expires').value || null;
+    const errEl = document.getElementById('pm-error');
+
+    if (!code) { errEl.textContent = '⚠️ Vui lòng nhập mã giảm giá!'; errEl.style.display='block'; return; }
+    if (!value || value < 1) { errEl.textContent = '⚠️ Giá trị phải lớn hơn 0!'; errEl.style.display='block'; return; }
+    if (type === 'percent' && value > 100) { errEl.textContent = '⚠️ % giảm giá không thể lớn hơn 100!'; errEl.style.display='block'; return; }
+
+    showToast('⏳ Đang kiểm tra...','');
+    const codes = await getPromoCodes();
+    if (codes[code]) { errEl.textContent = '⚠️ Mã này đã tồn tại!'; errEl.style.display='block'; return; }
+
+    codes[code] = { id: code, code, type, value, maxUsage, usedCount: 0, expiresAt, active: true, desc, createdAt: new Date().toISOString() };
+    await savePromoCodes(codes);
+    closeModal('modal-promo');
+    renderPromos();
+    showToast('✅ Đã tạo mã ' + code + '!', 'ok');
+  }
+
+  async function togglePromo(code) {
+    const codes = await getPromoCodes();
+    if (!codes[code]) return;
+    codes[code].active = !codes[code].active;
+    await savePromoCodes(codes);
+    renderPromos();
+    showToast(codes[code].active ? '✅ Đã bật mã!' : '⏸️ Đã tắt mã!', 'ok');
+  }
+
+  function deletePromo(code) {
+    showConfirm('🎫','Xóa mã giảm giá',`Bạn có chắc muốn xóa mã "${code}"? Hành động này không thể hoàn tác.`, async () => {
+      const codes = await getPromoCodes();
+      delete codes[code];
+      await savePromoCodes(codes);
+      renderPromos();
+      showToast('🗑️ Đã xóa mã!','err');
+    });
+  }
 
   // ── INIT ──────────────────────────────────────────────────────────────
   renderDashboard();

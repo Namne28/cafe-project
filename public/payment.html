@@ -1296,6 +1296,7 @@
     let subtotal = 0;
     let discount = 0;
     let promoApplied = false;
+    let currentPromoCode = null;
     let selectedMethod = 'bank';
     let selectedBank = { id: 'VCB', name: 'Vietcombank', account: '0123456789', owner: 'NGUYEN VAN ADMIN' };
     let timerInterval = null;
@@ -1323,7 +1324,6 @@
         } catch (e) { cartData = []; }
       }
 
-      // Nếu không có, tạo demo cart
       if (cartData.length === 0) {
         cartData = [
           { id: 2, name: 'Cà Phê Sữa', price: 30000, qty: 2, emoji: '☕' },
@@ -1355,21 +1355,26 @@
     function updateTotals() {
       const mode = document.getElementById('cust-mode')?.value;
       const shipFee = mode === 'delivery' ? 15000 : 0;
-      discount = promoApplied ? Math.round(subtotal * 0.1) : 0;
+
+      // Tính giảm giá theo loại mã
+      if (promoApplied && currentPromoCode) {
+        if (currentPromoCode.type === 'percent') {
+          discount = Math.round(subtotal * currentPromoCode.value / 100);
+        } else {
+          discount = Math.min(currentPromoCode.value, subtotal);
+        }
+      } else {
+        discount = 0;
+      }
+
       const grand = subtotal - discount + shipFee;
 
       document.getElementById('sub-total').textContent = subtotal.toLocaleString('vi-VN') + 'đ';
       document.getElementById('discount-amt').textContent = '-' + discount.toLocaleString('vi-VN') + 'đ';
       document.getElementById('grand-total').textContent = grand.toLocaleString('vi-VN') + 'đ';
-      document.getElementById('discount-row').style.display = promoApplied ? 'flex' : 'none';
+      document.getElementById('discount-row').style.display = (promoApplied && discount > 0) ? 'flex' : 'none';
       document.getElementById('delivery-fee-row').style.display = shipFee > 0 ? 'flex' : 'none';
 
-      // Cập nhật hiển thị số tiền QR
-      document.getElementById('qr-amount-display').textContent = grand.toLocaleString('vi-VN') + 'đ';
-      document.getElementById('momo-amount').textContent = grand.toLocaleString('vi-VN') + 'đ';
-      document.getElementById('zalo-amount').textContent = grand.toLocaleString('vi-VN') + 'đ';
-
-      // Cập nhật QR nếu đang xem
       if (selectedMethod === 'bank') updateQR(grand);
       if (selectedMethod === 'momo') updateEwalletQR('momo', grand);
       if (selectedMethod === 'zalo') updateEwalletQR('zalo', grand);
@@ -1378,10 +1383,8 @@
     }
 
     // ── QR GENERATION (VietQR API) ────────────────────────────────────
-    // VietQR là chuẩn QR ngân hàng Việt Nam chính thức
     function updateQR(amount) {
       const note = encodeURIComponent('HATVANG ' + orderRef);
-      // VietQR API: https://img.vietqr.io/image/{BANK}-{ACCOUNT}-{TEMPLATE}.png
       const url = `https://img.vietqr.io/image/${selectedBank.id}-${selectedBank.account}-compact2.png?amount=${amount}&addInfo=${note}&accountName=${encodeURIComponent(selectedBank.owner)}`;
       document.getElementById('qr-img').src = url;
       document.getElementById('qr-bank-label').textContent = selectedBank.name;
@@ -1390,7 +1393,6 @@
     }
 
     function updateEwalletQR(type, amount) {
-      // Tạo QR bằng API QR code với nội dung thanh toán
       const data = encodeURIComponent(`${type.toUpperCase()} 0901234567 ${amount} HATVANG-${orderRef}`);
       const url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${data}&color=${type === 'momo' ? 'AE2070' : '0068FF'}&bgcolor=FFFFFF&qzone=1`;
       document.getElementById(type + '-qr').src = url;
@@ -1413,7 +1415,6 @@
       });
       document.getElementById('method-' + method).classList.add('active');
 
-      // Hide all panels
       document.getElementById('bank-panel').classList.remove('show');
       document.getElementById('momo-panel').classList.remove('show');
       document.getElementById('zalo-panel').classList.remove('show');
