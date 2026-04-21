@@ -1473,18 +1473,38 @@
     }
 
     // ── PROMO ──────────────────────────────────────────────────────────
-    const VALID_PROMOS = ['CAFE10', 'HATVANG', 'WELCOME10'];
-
-    function applyPromo() {
+    async function applyPromo() {
       const code = document.getElementById('promo-code').value.trim().toUpperCase();
-      if (VALID_PROMOS.includes(code)) {
+      if (!code) { showToast('⚠️ Vui lòng nhập mã giảm giá'); return; }
+
+      showToast('⏳ Đang kiểm tra mã...');
+      try {
+        const codes = await fbGet('promoCodes');
+        const promo = codes ? codes[code] : null;
+        const now = new Date().toISOString().slice(0,10);
+
+        if (!promo) {
+          showToast('❌ Mã giảm giá không hợp lệ!');
+          document.getElementById('promo-ok').classList.remove('show');
+          promoApplied = false; currentPromoCode = null;
+          updateTotals(); return;
+        }
+        if (!promo.active) { showToast('❌ Mã này đã bị tắt!'); return; }
+        if (promo.expiresAt && promo.expiresAt < now) { showToast('❌ Mã này đã hết hạn!'); return; }
+        if (promo.maxUsage && (promo.usedCount||0) >= promo.maxUsage) { showToast('❌ Mã này đã hết lượt sử dụng!'); return; }
+
+        // Mã hợp lệ!
         promoApplied = true;
-        document.getElementById('promo-ok').classList.add('show');
-        updateTotals();
-        showToast('🎉 Áp dụng mã giảm giá thành công!');
-      } else {
-        showToast('❌ Mã giảm giá không hợp lệ');
-        document.getElementById('promo-ok').classList.remove('show');
+        currentPromoCode = promo;
+        const valLabel = promo.type === 'percent' ? `${promo.value}%` : `${Number(promo.value).toLocaleString('vi-VN')}đ`;
+        const okEl = document.getElementById('promo-ok');
+        okEl.textContent = `🎉 Áp dụng thành công! Giảm ${valLabel}`;
+        okEl.classList.add('show');
+        const grand = updateTotals();
+        if (selectedMethod !== 'cash') updateQR(grand);
+        showToast(`🎉 Áp dụng mã giảm ${valLabel} thành công!`);
+      } catch(e) {
+        showToast('❌ Lỗi kết nối. Vui lòng thử lại!');
       }
     }
 
