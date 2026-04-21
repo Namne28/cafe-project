@@ -1084,10 +1084,11 @@
             </div>
             <div style="margin-top:1rem;">
               <div style="font-size:0.88rem;font-weight:700;color:#AE2070;">Ví MoMo</div>
-              <div style="font-size:0.82rem;color:var(--text-muted);margin:4px 0;">SĐT: <strong>0901 234 567</strong>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin:4px 0;">Chủ Ví: <strong>Phạm Phương Nam</strong></div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin:4px 0;">ĐT: <strong>0934 467 977</strong>
                 <button class="copy-btn" onclick="copyText('momo-phone')">Sao chép</button>
               </div>
-              <span id="momo-phone" style="display:none;">0901234567</span>
+              <span id="momo-phone" style="display:none;">0934467977</span>
               <div class="qr-amount" id="momo-amount">0đ</div>
               <div class="qr-note">Nội dung: <strong id="momo-note">HATVANG-00000</strong></div>
               <div class="qr-timer">
@@ -1103,8 +1104,11 @@
             </div>
             <div style="margin-top:1rem;">
               <div style="font-size:0.88rem;font-weight:700;color:#0068FF;">ZaloPay</div>
-              <div style="font-size:0.82rem;color:var(--text-muted);margin:4px 0;">SĐT: <strong>0901 234 567</strong>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin:4px 0;">Chủ tài khoản: <strong>Phạm Phương Nam</strong></div>
+              <div style="font-size:0.82rem;color:var(--text-muted);margin:4px 0;">ĐT: <strong>0934 467 977</strong>
+                <button class="copy-btn" onclick="copyText('zalo-phone')">Sao chép</button>
               </div>
+              <span id="zalo-phone" style="display:none;">0934467977</span>
               <div class="qr-amount" id="zalo-amount">0đ</div>
               <div class="qr-note">Nội dung: <strong id="zalo-note">HATVANG-00000</strong></div>
               <div class="qr-timer">
@@ -1364,7 +1368,7 @@
     }
 
     function updateEwalletQR(type, amount) {
-      const data = encodeURIComponent(`${type.toUpperCase()} 0901234567 ${amount} HATVANG-${orderRef}`);
+      const data = encodeURIComponent(`${type.toUpperCase()} 0934467977 ${amount} HATVANG-${orderRef}`);
       const url = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${data}&color=${type === 'momo' ? 'AE2070' : '0068FF'}&bgcolor=FFFFFF&qzone=1`;
       document.getElementById(type + '-qr').src = url;
     }
