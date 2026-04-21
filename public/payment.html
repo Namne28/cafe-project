@@ -1033,43 +1033,14 @@
 
           <!-- BANK PANEL -->
           <div class="bank-selector show" id="bank-panel">
-            <div
-              style="font-size:0.8rem;font-weight:600;color:var(--text-muted);margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.08em;">
-              Chọn ngân hàng</div>
-            <div class="bank-grid">
-              <div class="bank-card active" id="bank-vcb"
-                onclick="selectBank('VCB','Vietcombank','0123456789','NGUYEN VAN ADMIN')">
-                <span class="bank-logo">🟢</span>
-                <div class="bank-name">VCB</div>
-                <div class="bank-full">Vietcombank</div>
+            <!-- Chỉ dùng MB Bank -->
+            <div style="display:flex;align-items:center;gap:0.75rem;background:linear-gradient(135deg,#004B87,#0068B2);border-radius:12px;padding:0.9rem 1.2rem;margin-bottom:1rem;">
+              <div style="background:#fff;border-radius:8px;padding:4px 10px;font-weight:900;font-size:1rem;color:#004B87;letter-spacing:0.05em;">MB</div>
+              <div>
+                <div style="font-weight:700;color:#fff;font-size:0.95rem;">MB Bank</div>
+                <div style="font-size:0.75rem;color:rgba(255,255,255,0.8);">Ngân hàng Quân đội</div>
               </div>
-              <div class="bank-card" id="bank-tcb"
-                onclick="selectBank('TCB','Techcombank','28200512345','phạm phương nam')">
-                <span class="bank-logo">🔴</span>
-                <div class="bank-name">TCB</div>
-                <div class="bank-full">Techcombank</div>
-              </div>
-              <div class="bank-card" id="bank-mb" onclick="selectBank('MB','MB Bank','0934467977','phạm phương Nam')">
-                <span class="bank-logo">🔵</span>
-                <div class="bank-name">MB</div>
-                <div class="bank-full">MB Bank</div>
-              </div>
-              <div class="bank-card" id="bank-bidv" onclick="selectBank('BIDV','BIDV','5544332211','NGUYEN VAN ADMIN')">
-                <span class="bank-logo">🟡</span>
-                <div class="bank-name">BIDV</div>
-                <div class="bank-full">BIDV</div>
-              </div>
-              <div class="bank-card" id="bank-vpb" onclick="selectBank('VPB','VPBank','6677889900','NGUYEN VAN ADMIN')">
-                <span class="bank-logo">🟠</span>
-                <div class="bank-name">VPB</div>
-                <div class="bank-full">VPBank</div>
-              </div>
-              <div class="bank-card" id="bank-agr"
-                onclick="selectBank('AGRIBANK','Agribank','3344556677','NGUYEN VAN ADMIN')">
-                <span class="bank-logo">🟤</span>
-                <div class="bank-name">AGR</div>
-                <div class="bank-full">Agribank</div>
-              </div>
+              <div style="margin-left:auto;background:rgba(255,255,255,0.15);border-radius:6px;padding:3px 10px;font-size:0.72rem;font-weight:700;color:#fff;">✓ Mặc định</div>
             </div>
 
             <!-- QR CODE DISPLAY -->
@@ -1082,12 +1053,12 @@
                 <img id="qr-img" src="" alt="QR Chuyển khoản" />
               </div>
               <div class="qr-info">
-                <div class="qr-bank-name" id="qr-bank-label">Vietcombank</div>
+                <div class="qr-bank-name" id="qr-bank-label">MB Bank</div>
                 <div class="qr-account">
-                  STK: <strong id="qr-account-num">0123456789</strong>
+                  STK: <strong id="qr-account-num">0934467977</strong>
                   <button class="copy-btn" onclick="copyText('qr-account-num')">Sao chép</button>
                 </div>
-                <div class="qr-account">Chủ TK: <strong id="qr-owner">NGUYEN VAN ADMIN</strong></div>
+                <div class="qr-account">Chủ TK: <strong id="qr-owner">PHẠM PHƯƠNG NAM</strong></div>
                 <div class="qr-amount" id="qr-amount-display">0đ</div>
                 <div class="qr-note">Nội dung: <strong id="qr-note-text">HATVANG-00000</strong>
                   <button class="copy-btn" onclick="copyText('qr-note-text')">Sao chép</button>
@@ -1298,7 +1269,7 @@
     let promoApplied = false;
     let currentPromoCode = null;
     let selectedMethod = 'bank';
-    let selectedBank = { id: 'VCB', name: 'Vietcombank', account: '0123456789', owner: 'NGUYEN VAN ADMIN' };
+    let selectedBank = { id: 'MB', name: 'MB Bank', account: '0934467977', owner: 'PHAM PHUONG NAM' };
     let timerInterval = null;
     let timerSeconds = 15 * 60;
     let orderRef = '';
