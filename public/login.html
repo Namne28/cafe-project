@@ -459,17 +459,32 @@
 </div>
 
 <script>
-  // ── KHỞI TẠO DỮ LIỆU ──────────────────────────────────────────────
+  // ── TÀI KHOẢN CỐ ĐỊNH (hoạt động trên mọi thiết bị) ──────────────
+  const BUILTIN_ACCOUNTS = [
+    { username: 'admin', password: 'admin123', fullname: 'Quản trị viên', email: 'admin@hatvangcafe.vn', role: 'admin' }
+  ];
+
   function initUsers() {
-    if (!localStorage.getItem('hvCafeUsers')) {
-      const defaultUsers = [
-        { username: 'admin', password: 'admin123', fullname: 'Admin', email: 'admin@hatvangcafe.vn', role: 'admin', createdAt: new Date().toISOString() }
-      ];
-      localStorage.setItem('hvCafeUsers', JSON.stringify(defaultUsers));
-    }
+    // Đảm bảo admin luôn tồn tại trong localStorage
+    const users = JSON.parse(localStorage.getItem('hvCafeUsers') || '[]');
+    let changed = false;
+    BUILTIN_ACCOUNTS.forEach(ba => {
+      if (!users.find(u => u.username === ba.username)) {
+        users.push({ ...ba, createdAt: new Date().toISOString() });
+        changed = true;
+      }
+    });
+    if (changed) localStorage.setItem('hvCafeUsers', JSON.stringify(users));
   }
 
-  function getUsers() { return JSON.parse(localStorage.getItem('hvCafeUsers') || '[]'); }
+  function getUsers() {
+    const stored = JSON.parse(localStorage.getItem('hvCafeUsers') || '[]');
+    // Luôn merge với tài khoản cố định
+    BUILTIN_ACCOUNTS.forEach(ba => {
+      if (!stored.find(u => u.username === ba.username)) stored.unshift({ ...ba, createdAt: '' });
+    });
+    return stored;
+  }
   function saveUsers(u) { localStorage.setItem('hvCafeUsers', JSON.stringify(u)); }
 
   // Nếu đã đăng nhập rồi thì redirect về trang chủ
